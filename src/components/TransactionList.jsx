@@ -1,33 +1,25 @@
 import React, { useState } from "react";
-import DeleteConfirmModal from "./DeleteConfirmModal";
 
-const TransactionList = ({ transactions, onDelete, salary, onEditSalary }) => {
+const TransactionList = ({
+  transactions,
+  onRequestDeleteExpense, // renamed for clarity
+  salary,
+  onEditSalary,
+  onRequestDeleteSalary, // renamed for clarity
+}) => {
   const [editing, setEditing] = useState(false);
   const [newSalary, setNewSalary] = useState(salary ? salary.amount : 0);
-  const [deleteId, setDeleteId] = useState(null);
-  const [deleteName, setDeleteName] = useState("");
 
   const handleSave = () => {
     onEditSalary(Number(newSalary));
     setEditing(false);
   };
 
-  const confirmDelete = () => {
-    if (deleteId) {
-      onDelete(deleteId);
-      setDeleteId(null);
-    }
-  };
-
-  const cancelDelete = () => {
-    setDeleteId(null);
-  };
-
   // Calculate balance after each expense
   const calculateBalanceAfter = (index) => {
     if (!salary) return 0;
     const totalExpensesTillNow = transactions
-      .slice(index) // includes current expense and all after
+      .slice(index)
       .reduce((acc, t) => acc + Math.abs(t.amount), 0);
     return salary.amount - totalExpensesTillNow;
   };
@@ -50,12 +42,21 @@ const TransactionList = ({ transactions, onDelete, salary, onEditSalary }) => {
                     ₹{salary.amount}
                   </span>
                 </p>
-                <button
-                  onClick={() => setEditing(true)}
-                  className="text-emerald-500 text-sm font-semibold hover:underline"
-                >
-                  Edit
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setEditing(true)}
+                    className="text-emerald-500 text-sm font-semibold hover:underline"
+                  >
+                    Edit
+                  </button>
+                  {/* Ask parent to confirm delete */}
+                  <button
+                    onClick={onRequestDeleteSalary}
+                    className="text-red-500 text-sm font-semibold hover:underline"
+                  >
+                    Delete
+                  </button>
+                </div>
               </>
             ) : (
               <div className="flex items-center gap-2">
@@ -88,9 +89,9 @@ const TransactionList = ({ transactions, onDelete, salary, onEditSalary }) => {
         {transactions.length === 0 && (
           <p className="text-gray-400 text-sm">No expenses yet</p>
         )}
+
         {transactions.map((t, index) => {
           const balanceAfter = calculateBalanceAfter(index);
-
           return (
             <li
               key={t.id}
@@ -130,15 +131,6 @@ const TransactionList = ({ transactions, onDelete, salary, onEditSalary }) => {
           );
         })}
       </ul>
-
-      {/* Delete Confirmation Modal */}
-      {deleteId && (
-        <DeleteConfirmModal
-          expenseName={deleteName}
-          onConfirm={confirmDelete}
-          onCancel={cancelDelete}
-        />
-      )}
     </div>
   );
 };

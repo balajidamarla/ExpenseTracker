@@ -19,7 +19,7 @@ const AddTransaction = ({ onAdd }) => {
       id: Date.now(),
       text,
       amount: +amount,
-      date: formattedDate, // 🆕 add date field
+      date: formattedDate,
     };
 
     onAdd(newTransaction);
