@@ -101,7 +101,7 @@ const TransactionList = ({ transactions, onDelete, salary, onEditSalary }) => {
                 <span className="font-medium text-gray-700">{t.text}</span>
                 <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
                   <p>{t.date}</p>
-                  {/* 💰 Remaining Balance */}
+                  {/*Remaining Balance */}
                   <p className="text-gray-600 font-medium">
                     | Balance:{" "}
                     <span className="text-green-600 font-semibold">

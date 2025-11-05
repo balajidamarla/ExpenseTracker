@@ -47,8 +47,8 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
-      <div className="bg-white shadow-md rounded-2xl p-6 w-full max-w-md relative">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
+      <div className="bg-white shadow-md rounded-2xl p-4 w-full max-w-md relative">
         <Header />
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
