@@ -104,7 +104,7 @@ const TransactionList = ({
               {/* Left Side */}
               <div>
                 <span className="font-medium text-gray-700">{t.text}</span>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-gray-500 mt-1 gap-1 sm:gap-2">
+                <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
                   <p>{t.date}</p>
                   <p className="text-gray-600 font-medium">
                     <span className="hidden sm:inline">| </span>
