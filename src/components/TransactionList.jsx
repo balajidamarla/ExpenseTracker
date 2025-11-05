@@ -2,10 +2,10 @@ import React, { useState } from "react";
 
 const TransactionList = ({
   transactions,
-  onRequestDeleteExpense, // renamed for clarity
+  onRequestDeleteExpense, // triggered when clicking delete expense
   salary,
   onEditSalary,
-  onRequestDeleteSalary, // renamed for clarity
+  onRequestDeleteSalary, // triggered when clicking delete salary
 }) => {
   const [editing, setEditing] = useState(false);
   const [newSalary, setNewSalary] = useState(salary ? salary.amount : 0);
@@ -15,7 +15,7 @@ const TransactionList = ({
     setEditing(false);
   };
 
-  // Calculate balance after each expense
+  // 🧮 Calculate remaining balance after each expense
   const calculateBalanceAfter = (index) => {
     if (!salary) return 0;
     const totalExpensesTillNow = transactions
@@ -42,14 +42,17 @@ const TransactionList = ({
                     ₹{salary.amount}
                   </span>
                 </p>
+
                 <div className="flex gap-2">
+                  {/* Edit Salary */}
                   <button
                     onClick={() => setEditing(true)}
                     className="text-emerald-500 text-sm font-semibold hover:underline"
                   >
                     Edit
                   </button>
-                  {/* Ask parent to confirm delete */}
+
+                  {/* Delete Salary — handled by parent */}
                   <button
                     onClick={onRequestDeleteSalary}
                     className="text-red-500 text-sm font-semibold hover:underline"
@@ -92,6 +95,7 @@ const TransactionList = ({
 
         {transactions.map((t, index) => {
           const balanceAfter = calculateBalanceAfter(index);
+
           return (
             <li
               key={t.id}
@@ -100,11 +104,11 @@ const TransactionList = ({
               {/* Left Side */}
               <div>
                 <span className="font-medium text-gray-700">{t.text}</span>
-                <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-gray-500 mt-1 gap-1 sm:gap-2">
                   <p>{t.date}</p>
-                  {/*Remaining Balance */}
                   <p className="text-gray-600 font-medium">
-                    | Balance:{" "}
+                    <span className="hidden sm:inline">| </span>
+                    Balance:{" "}
                     <span className="text-green-600 font-semibold">
                       ₹{balanceAfter}
                     </span>
@@ -117,11 +121,10 @@ const TransactionList = ({
                 <span className="text-red-600 font-semibold">
                   ₹{Math.abs(t.amount)}
                 </span>
+
+                {/* Delete Expense — handled by parent */}
                 <button
-                  onClick={() => {
-                    setDeleteId(t.id);
-                    setDeleteName(t.text);
-                  }}
+                  onClick={() => onRequestDeleteExpense(t.id, t.text)}
                   className="bg-red-500 text-white text-xs px-2 py-1 rounded-md hover:bg-red-600"
                 >
                   X
