@@ -6,7 +6,7 @@ const Tabs = ({ activeTab, setActiveTab }) => {
       <button
         className={`w-1/2 py-2 font-semibold ${
           activeTab === "overview"
-            ? "text-blue-600 border-b-2 border-blue-600"
+            ? "text-red-600 border-b-2 border-red-600"
             : "text-gray-500"
         }`}
         onClick={() => setActiveTab("overview")}
@@ -16,7 +16,7 @@ const Tabs = ({ activeTab, setActiveTab }) => {
       <button
         className={`w-1/2 py-2 font-semibold ${
           activeTab === "expenses"
-            ? "text-blue-600 border-b-2 border-blue-600"
+            ? "text-red-600 border-b-2 border-red-600"
             : "text-gray-500"
         }`}
         onClick={() => setActiveTab("expenses")}

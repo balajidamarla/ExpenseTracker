@@ -13,7 +13,7 @@ function App() {
   });
 
   const [activeTab, setActiveTab] = useState("overview");
-  const [showSuccess, setShowSuccess] = useState(false); // 🆕 for modal
+  const [showSuccess, setShowSuccess] = useState(false); //for modal
 
   useEffect(() => {
     localStorage.setItem("transactions", JSON.stringify(transactions));
@@ -29,7 +29,7 @@ function App() {
         { ...transaction, amount: -Math.abs(transaction.amount) },
         ...transactions,
       ]);
-      setShowSuccess(true); // 🆕 Show modal on adding expense
+      setShowSuccess(true); //Show modal on adding expense
       setTimeout(() => setShowSuccess(false), 2000); // auto hide after 2s
     }
   };
@@ -73,7 +73,7 @@ function App() {
           />
         )}
 
-        {/* 🆕 Success Modal */}
+        {/* Success Modal */}
         {showSuccess && <SuccessModal message="Expense added successfully!" />}
       </div>
     </div>
