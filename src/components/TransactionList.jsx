@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { Edit, Trash2 } from "lucide-react";
 
 const TransactionList = ({
   transactions,
   onRequestDeleteExpense, // triggered when clicking delete expense
+  onRequestEditExpense, // NEW: triggered when saving edited expense
   salary,
   onEditSalary,
   onRequestDeleteSalary, // triggered when clicking delete salary
@@ -10,18 +12,39 @@ const TransactionList = ({
   const [editing, setEditing] = useState(false);
   const [newSalary, setNewSalary] = useState(salary ? salary.amount : 0);
 
-  const handleSave = () => {
+  // Track which expense is being edited
+  const [editExpenseId, setEditExpenseId] = useState(null);
+  const [editExpenseText, setEditExpenseText] = useState("");
+  const [editExpenseAmount, setEditExpenseAmount] = useState("");
+
+  const handleSaveSalary = () => {
     onEditSalary(Number(newSalary));
     setEditing(false);
   };
 
-  // 🧮 Calculate remaining balance after each expense
+  // Calculate remaining balance after each expense
   const calculateBalanceAfter = (index) => {
     if (!salary) return 0;
     const totalExpensesTillNow = transactions
       .slice(index)
       .reduce((acc, t) => acc + Math.abs(t.amount), 0);
     return salary.amount - totalExpensesTillNow;
+  };
+
+  // Start editing an expense
+  const handleEditExpense = (expense) => {
+    setEditExpenseId(expense.id);
+    setEditExpenseText(expense.text);
+    setEditExpenseAmount(Math.abs(expense.amount));
+  };
+
+  // Save edited expense
+  const handleSaveExpense = () => {
+    if (!editExpenseText || !editExpenseAmount) return;
+    onRequestEditExpense(editExpenseId, editExpenseText, editExpenseAmount);
+    setEditExpenseId(null);
+    setEditExpenseText("");
+    setEditExpenseAmount("");
   };
 
   return (
@@ -44,7 +67,6 @@ const TransactionList = ({
                 </p>
 
                 <div className="flex gap-2">
-                  {/* Edit Salary */}
                   <button
                     onClick={() => setEditing(true)}
                     className="text-emerald-500 text-sm font-semibold hover:underline"
@@ -70,7 +92,7 @@ const TransactionList = ({
                   className="p-1 border border-gray-300 rounded-md w-24"
                 />
                 <button
-                  onClick={handleSave}
+                  onClick={handleSaveSalary}
                   className="bg-emerald-500 text-white px-2 py-1 text-sm rounded-md hover:bg-emerald-600"
                 >
                   Save
@@ -96,40 +118,83 @@ const TransactionList = ({
         {transactions.map((t, index) => {
           const balanceAfter = calculateBalanceAfter(index);
 
+          const isEditing = editExpenseId === t.id;
+
           return (
             <li
               key={t.id}
-              className="flex justify-between items-start p-3 bg-red-50 border-r-4 border-red-400 rounded-md shadow-sm"
+              className="p-3 bg-red-50 border-r-4 border-red-400 rounded-md shadow-sm"
             >
-              {/* Left Side */}
-              <div>
-                <span className="font-medium text-gray-700">{t.text}</span>
-                <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-                  <p>{t.date}</p>
-                  <p className="text-gray-600 font-medium">
-                    <span className="hidden sm:inline">| </span>
-                    Balance:{" "}
-                    <span className="text-green-600 font-semibold">
-                      ₹{balanceAfter}
-                    </span>
-                  </p>
+              {isEditing ? (
+                // 🧩 Editing UI
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="text"
+                    value={editExpenseText}
+                    onChange={(e) => setEditExpenseText(e.target.value)}
+                    className="p-1 border border-gray-300 rounded-md text-sm"
+                  />
+                  <input
+                    type="number"
+                    value={editExpenseAmount}
+                    onChange={(e) => setEditExpenseAmount(e.target.value)}
+                    className="p-1 border border-gray-300 rounded-md text-sm"
+                  />
+                  <div className="flex gap-2 mt-1">
+                    <button
+                      onClick={handleSaveExpense}
+                      className="bg-gray-500 text-white text-xs px-2 py-1 rounded-md hover:bg-gray-600"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditExpenseId(null)}
+                      className="text-gray-500 text-xs"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                // Normal View
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="font-medium text-gray-700">{t.text}</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-gray-500 mt-1 gap-1 sm:gap-2">
+                      <p>{t.date}</p>
+                      <p className="text-gray-600 font-medium">
+                        <span className="hidden sm:inline">| </span>
+                        Balance:{" "}
+                        <span className="text-green-600 font-semibold">
+                          ₹{balanceAfter}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
 
-              {/* Right Side */}
-              <div className="flex items-center gap-2">
-                <span className="text-red-600 font-semibold">
-                  ₹{Math.abs(t.amount)}
-                </span>
+                  {/* Right Side Buttons */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-red-600 font-semibold">
+                      ₹{Math.abs(t.amount)}
+                    </span>
 
-                {/* Delete Expense — handled by parent */}
-                <button
-                  onClick={() => onRequestDeleteExpense(t.id, t.text)}
-                  className="bg-red-500 text-white text-xs px-2 py-1 rounded-md hover:bg-red-600"
-                >
-                  X
-                </button>
-              </div>
+                    <button
+                      onClick={() => handleEditExpense(t)}
+                      className="p-1.5 bg-gray-500 rounded-md hover:bg-gray-600 transition"
+                      title="Edit Expense"
+                    >
+                      <Edit size={14} color="white" />
+                    </button>
+
+                    <button
+                      onClick={() => onRequestDeleteExpense(t.id, t.text)}
+                      className="bg-red-500 text-white text-xs px-2 py-1 rounded-md hover:bg-red-600"
+                    >
+                      X
+                    </button>
+                  </div>
+                </div>
+              )}
             </li>
           );
         })}

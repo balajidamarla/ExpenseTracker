@@ -110,6 +110,13 @@ function App() {
       showSuccess("Salary updated successfully!");
     }
   };
+  const editExpense = (id, newText, newAmount) => {
+    const updatedTransactions = transactions.map((t) =>
+      t.id === id ? { ...t, text: newText, amount: -Math.abs(newAmount) } : t
+    );
+    setTransactions(updatedTransactions);
+    showSuccess("Expense updated successfully!");
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
@@ -166,6 +173,7 @@ function App() {
                 },
               })
             }
+            onRequestEditExpense={editExpense}
           />
         )}
 
