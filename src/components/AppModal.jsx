@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 
 /**
  * Universal modal for success, confirmation, and warning messages
  * type = "success" | "confirm" | "error"
- * actions = { onConfirm, onCancel }
  */
 const AppModal = ({
   show,
@@ -14,6 +13,23 @@ const AppModal = ({
   onConfirm,
   onCancel,
 }) => {
+  // Play sound effect based on modal type
+  useEffect(() => {
+    if (show) {
+      let soundPath = "";
+
+      if (type === "success") soundPath = "/tone.mp3";
+      else if (type === "error") soundPath = "/error.mp3"; // expense delete
+      else if (type === "confirm") soundPath = "/error.mp3"; // salary delete
+
+      if (soundPath) {
+        const audio = new Audio(soundPath);
+        audio.volume = 0.6;
+        audio.play().catch((err) => console.warn("Audio play prevented:", err));
+      }
+    }
+  }, [show, type]);
+
   if (!show) return null;
 
   const color =
@@ -92,7 +108,7 @@ const AppModal = ({
 
         {/* Buttons */}
         {type === "success" ? (
-          <></> // No buttons for success, closes automatically
+          <></> // Success modal closes automatically, no buttons
         ) : (
           <div className="flex justify-center gap-3">
             <button
